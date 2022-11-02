@@ -1,0 +1,26 @@
+{
+  "name": "sdc-reviews",
+  "version": "1.0.0",
+  "description": "Server-side and database for forked FEC",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "server": "nodemon server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RFP2209-Gremlins/SDC-Reviews.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RFP2209-Gremlins/SDC-Reviews/issues"
+  },
+  "homepage": "https://github.com/RFP2209-Gremlins/SDC-Reviews#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "nodemon": "^2.0.20",
+    "postgres": "^3.3.1"
+  }
+}
