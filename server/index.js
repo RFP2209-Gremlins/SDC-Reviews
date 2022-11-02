@@ -4,7 +4,7 @@ require('dotenv').config()
 app.use(express.json())
 
 app.get('/', (req, res) => {
-  res.send('Hellp World')
+  res.send('Hello World')
 })
 
 
