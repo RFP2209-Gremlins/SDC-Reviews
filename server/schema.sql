@@ -38,3 +38,5 @@
 -- \COPY reviews_photos FROM 'data/reviews_photos.csv' DELIMITER ',' CSV HEADER;
 -- \COPY characteristics FROM 'data/characteristics.csv' DELIMITER ',' CSV HEADER;
 -- \COPY characteristic_reviews FROM 'data/characteristic_reviews.csv' DELIMITER ',' CSV HEADER;
+
+\UPDATE reviews SET response = '' WHERE response = 'null';

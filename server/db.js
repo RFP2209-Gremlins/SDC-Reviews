@@ -6,7 +6,7 @@ const client = new Client({
  database: process.env.DB_DATABASE,
  password: process.env.DB_PASSWORD
 })
-client.connect((err) => {
+const connection = client.connect((err) => {
  if (err) {
    console.log(err, 'CONNECTION ERR')
  } else {
@@ -14,16 +14,8 @@ client.connect((err) => {
  }
 })
 
-const getReviews = (callback) => {
- client.query('SELECT * FROM reviews_photos', (err, res) => {
-   if (err) {
-     console.log(err, 'ERROR in getReviews')
-   } else {
-     callback(null, res.rows)
-   }
- })
-}
+
 
 module.exports = {
- getReviews
+ client
 }

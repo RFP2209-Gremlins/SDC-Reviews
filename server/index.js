@@ -1,19 +1,10 @@
 const express = require('express')
 const app = express()
+const router = require('./routers.js')
 require('dotenv').config()
-const { getReviews } = require('./db.js')
 app.use(express.json())
 
-app.get('/', (req, res) => {
- getReviews((err, result) => {
-   if (err) {
-     console.log(err, 'error in server get')
-   } else {
-     res.send(result)
-   }
-   res.end()
- })
-})
+app.use('/', router)
 
 
 const PORT = process.env.PORT
