@@ -2,12 +2,8 @@ const express = require('express')
 const router = express.Router()
 const { getReviews, getPhotos } = require('./models.js')
 
-router.get('/', (reqRev, res) => {
-  // let finalObj = {}
-  // let reviewsObj = {
-  //   photos: []
-  // }
-  getReviews(reqRev.body.product_id, (err, result1) => {
+router.get('/', (req, res) => {
+  getReviews(req.body.product_id, (err, result1) => {
     if (err) {
       console.log(err, 'error in server get')
     } else {

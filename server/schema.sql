@@ -34,9 +34,15 @@
 --   name text NOT NULL
 -- );
 
+
+
+-- \UPDATE reviews SET response = null WHERE response = 'null';
 -- \COPY reviews FROM 'data/reviews.csv' DELIMITER ',' CSV HEADER;
 -- \COPY reviews_photos FROM 'data/reviews_photos.csv' DELIMITER ',' CSV HEADER;
 -- \COPY characteristics FROM 'data/characteristics.csv' DELIMITER ',' CSV HEADER;
 -- \COPY characteristic_reviews FROM 'data/characteristic_reviews.csv' DELIMITER ',' CSV HEADER;
 
-\UPDATE reviews SET response = '' WHERE response = 'null';
+
+-- ALTER TABLE reviews_photos ADD CONSTRAINT photo_review_key FOREIGN KEY (review_id) REFERENCES reviews (id);
+-- ALTER TABLE characteristic_reviews ADD FOREIGN KEY (characteristic_id) REFERENCES Characteristics (id);
+-- ALTER TABLE characteristic_reviews ADD FOREIGN KEY (review_id) REFERENCES Reviews (id);
