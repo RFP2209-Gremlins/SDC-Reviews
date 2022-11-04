@@ -3,8 +3,8 @@ const router = express.Router()
 const { getReviews, getPhotos } = require('./models.js')
 
 router.get('/reviews/', (req, res) => {
-
-  getReviews(req.body.product_id, (err, result1) => {
+  const { product_id, page, count } = req.body;
+  getReviews(product_id, page, count, (err, result1) => {
     if (err) {
       console.log(err, 'error in server get')
     } else {
