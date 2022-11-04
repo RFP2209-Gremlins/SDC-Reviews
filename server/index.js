@@ -3,6 +3,7 @@ const app = express()
 const router = require('./routers.js')
 require('dotenv').config()
 app.use(express.json())
+app.use(express.urlencoded({ extended: true} ));
 
 app.use('/', router)
 

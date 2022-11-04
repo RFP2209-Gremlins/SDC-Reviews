@@ -3,10 +3,10 @@ const { client } = require('./db.js')
 const getReviews = (productID, callback) => {
   let query = `SELECT json_build_object(
     'product_id', ${productID},
-    'count', (SELECT COUNT(id) FROM reviews WHERE product_id = ${productID}),
+    'count', 0,
     'results', (SELECT json_agg(
       json_build_object(
-        'review_id', id,
+        'review_id', reviews.id,
         'rating', rating,
         'summary', summary,
         'response', response,
@@ -15,13 +15,13 @@ const getReviews = (productID, callback) => {
         'reviewer_name', reviewer_name,
         'helpfulness', helfulness
       )
-    )FROM reviews WHERE product_id = ${productID} AND reported = false)
+    ) FROM reviews WHERE product_id = ${productID})
   )`
   client.query(query, (err, res) => {
     if (err) {
       console.log(err, 'ERROR in getReviews')
     } else {
-      callback(null, res)
+      callback(null, res.rows[0].json_build_object)
     }
   })
  }
