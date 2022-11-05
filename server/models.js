@@ -48,11 +48,11 @@ const getReviews = (productID, page, count, callback) => {
       false, (SELECT COUNT(recommend) FROM reviews WHERE product_id = ${productID} AND recommend = 'f'),
       true, (SELECT COUNT(recommend) FROM reviews WHERE product_id = ${productID} AND recommend = 't')
     )),
-    'characteristics', (SELECT json_build_object(
-      name, (SELECT json_build_object(
+    'characteristics', (SELECT json_object_agg(
+      name, (json_build_object(
         'id', id,
         'value', (select AVG(value) from characteristic_reviews where characteristic_id = characteristics.id)
-      )FROM characteristics WHERE product_id = ${productID})
+      ))
     )FROM characteristics WHERE product_id = ${productID})
   )`
   client.query(query, (err, res) => {
