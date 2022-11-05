@@ -33,24 +33,42 @@ const getReviews = (productID, page, count, callback) => {
     }
   })
  }
-//  `SELECT * FROM reviews WHERE product_id = ${productID}`
-//  const getPhotos = (reviewID, callback) => {
-//   client.query(`SELECT * FROM reviews_photos WHERE review_id = ${reviewID}`, (err, res) => {
-//     if (err) {
-//       console.log(err, 'ERROR in getReviews')
-//     } else {
-//       callback(null, res.rows)
-//     }
-//   })
-//  }
 
-// (SELECT json_agg(
-//   json_build_object(
-//     'id', id,
-//     'url', (SELECT json_agg(url) FROM reviews_photos)
-//   )
-// )FROM reviews_photos WHERE reviews_photos.review_id = review_id)
+ const getMetaData = (productID, callback) => {
+  let query = `SELECT json_build_object(
+    'product_id', ${productID},
+    'ratings', (SELECT json_build_object(
+      1, (SELECT COUNT(rating) FROM reviews WHERE product_id = ${productID} AND rating = 1),
+      2, (SELECT COUNT(rating) FROM reviews WHERE product_id = ${productID} AND rating = 2),
+      3, (SELECT COUNT(rating) FROM reviews WHERE product_id = ${productID} AND rating = 3),
+      4, (SELECT COUNT(rating) FROM reviews WHERE product_id = ${productID} AND rating = 4),
+      5, (SELECT COUNT(rating) FROM reviews WHERE product_id = ${productID} AND rating = 5)
+    )),
+    'recommended', (SELECT json_build_object(
+      false, (SELECT COUNT(recommend) FROM reviews WHERE product_id = ${productID} AND recommend = 'f'),
+      true, (SELECT COUNT(recommend) FROM reviews WHERE product_id = ${productID} AND recommend = 't')
+    )),
+    'characteristics', (SELECT json_build_object(
+      name, (SELECT json_build_object(
+        'id', id,
+        'value', (select AVG(value) from characteristic_reviews where characteristic_id = characteristics.id)
+      )FROM characteristics WHERE product_id = ${productID})
+    )FROM characteristics WHERE product_id = ${productID})
+  )`
+  client.query(query, (err, res) => {
+    if (err) {
+      console.log(err, 'ERROR in getMetaData - models.js')
+    } else {
+      callback(null, res.rows[0].json_build_object)
+    }
+  })
+ }
+
+
+
+
 
  module.exports = {
-  getReviews
+  getReviews,
+  getMetaData
  }
