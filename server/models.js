@@ -15,7 +15,7 @@ const getReviews = (productID, page, count, callback) => {
         'body', body,
         'date', to_timestamp(CAST(date as bigint)/1000),
         'reviewer_name', reviewer_name,
-        'helpfulness', helfulness,
+        'helpfulness', helpfulness,
         'photos', (SELECT json_agg(
           json_build_object(
             'id', id,
@@ -64,11 +64,72 @@ const getReviews = (productID, page, count, callback) => {
   })
  }
 
+ const markHelpful = (reviewID, callback) => {
+  let query = `UPDATE reviews SET helpfulness = helpfulness + 1 WHERE id =${reviewID}`;
+  client.query(query)
+    .then(result => callback(null, result))
+    .catch(err => console.log(err))
+ }
 
+ const reportReview = (reviewID, callback) => {
+  let query = `UPDATE reviews SET reported = true WHERE id =${reviewID}`;
+  client.query(query)
+    .then(result => callback(null, result))
+    .catch(err => console.log(err))
+ }
 
+ const postReview = (productID, rating, summary, body, recommend, name, email, photos, characteristics, callback) => {
+  let charKey = Object.keys(characteristics);
+  console.log(characteristics, 'CHAR')
+  console.log(charKey, 'KEEYS')
+  let charValues = Object.values(characteristics);
+  console.log(charValues, 'VALUES')
+  console.log(summary)
+  // let date = new Date().getTime();
+  // console.log(date, 'DATE')
+  // ${date},
+  if (photos.length > 0) {
+    let query = `WITH review_post AS (
+      INSERT INTO reviews(product_id, rating, date, recommend, summary, body, reviewer_name, reviewer_email)
+      VALUES (${productID}, ${rating}, ${recommend}, ${summary}, ${body}, ${name}, ${email})
+      RETURNING id AS review_id
+      ), char_post AS (
+        INSERT INTO characteristics_reviews(characteristic_id, review_id, value)
+        SELECT review_id, UNNEST[ARRAY(${charKey})])::INT, UNNEST[ARRAY(${charValues})])::INT FROM review_post),
+        INSERT INTO reviews_photos(review_id, url) SELECT review_id, UNNEST[ARRAY(${photos})]::VARCHAR FROM review_post`
+    client.query(query)
+      .then(result => callback(null, result))
+      .catch(err => console.log(err, 'ERROR IN POST w/ photos - models.js'))
+  } else {
+    let query = `WITH review_post AS (
+      INSERT INTO reviews(product_id, rating, recommend, summary, body, reviewer_name, reviewer_email)
+      VALUES (${productID}, ${rating}, ${recommend}, ${summary}, ${body}, ${name}, ${email})
+      RETURNING id AS review_id
+      ), char_post AS (
+        INSERT INTO characteristics_reviews(characteristic_id, review_id, value)
+        SELECT review_id, UNNEST[ARRAY(${charKey})])::INT, UNNEST[ARRAY(${charValues})])::INT FROM review_post
+        )`
+    client.query(query)
+      .then(result => callback(null, result))
+      .catch(err => console.log(err, 'ERROR IN POST w/o photos - models.js'))
+  }
+ }
 
+ //new Date().getTime()
+// product_id
+// rating
+// summary
+// body
+// recommend
+// name
+// email
+// photos
+// characteristics
 
  module.exports = {
   getReviews,
-  getMetaData
+  getMetaData,
+  markHelpful,
+  reportReview,
+  postReview
  }
