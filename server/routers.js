@@ -3,8 +3,9 @@ const router = express.Router()
 const { getReviews, getMetaData, markHelpful, reportReview, postReview } = require('./models.js')
 
 router.get('/reviews/', (req, res) => {
-  const { product_id, page, count } = req.body;
-  getReviews(product_id, page, count, (err, result1) => {
+  const { product_id, page, count, sort } = req.body;
+  console.log(sort)
+  getReviews(product_id, page, count, sort, (err, result1) => {
     if (err) {
       console.log(err, 'error in server get')
     } else {

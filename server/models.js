@@ -1,13 +1,25 @@
 const { client } = require('./db.js')
 
-const getReviews = (productID, page, count, callback) => {
+const getReviews = (productID, page, count, sort, callback) => {
+  let pages = page || 1;
+  if (sort === 'newest') {
+    sort = 'date DESC'
+  } else if (sort === 'helpfulness') {
+    sort = 'helpfulness DESC'
+  } else {
+    sort = 'date DESC, helpfulness DESC'
+  }
+  console.log(sort, 'SORT')
   let query = `SELECT json_build_object(
     'product', ${productID},
-    'page', ${page},
+    'page', ${pages},
     'count', ${count},
-    'results', (SELECT json_agg(
+    'results', (
+      WITH result AS (
+        SELECT * FROM reviews WHERE product_id = ${productID} AND reported = 'f' GROUP BY reviews.id ORDER BY ${sort} LIMIT ${count})
+      SELECT json_agg(
       json_build_object(
-        'review_id', reviews.id,
+        'review_id', id,
         'rating', rating,
         'summary', summary,
         'recommend', recommend,
@@ -21,18 +33,19 @@ const getReviews = (productID, page, count, callback) => {
             'id', id,
             'url', url
           )
-        )FROM reviews_photos where review_id = reviews.id)
+        )FROM reviews_photos where review_id = result.id)
       )
-    ) FROM reviews WHERE product_id = ${productID} AND reported = 'f')
+    ) FROM result)
   )`
   client.query(query, (err, res) => {
     if (err) {
-      console.log(err, 'ERROR in getReviews')
+      console.log(err, 'ERROR in getReviews - models.js')
     } else {
       callback(null, res.rows[0].json_build_object)
     }
   })
  }
+//  GROUP BY reviews ORDER BY ${sort} LIMIT ${count}
 
  const getMetaData = (productID, callback) => {
   let query = `SELECT json_build_object(
