@@ -2,10 +2,9 @@ const express = require('express')
 const router = express.Router()
 const { getReviews, getMetaData, markHelpful, reportReview, postReview } = require('./models.js')
 
-router.get('/reviews/', (req, res) => {
-  const { product_id, page, count, sort } = req.body;
-  console.log(sort)
-  getReviews(product_id, page, count, sort, (err, result1) => {
+router.get('/reviews', (req, res) => {
+  getReviews(req.query.product_id, req.query.page, req.query.count, req.query.sort, (err, result1) => {
+    console.log(req.query.product_id)
     if (err) {
       console.log(err, 'error in server get')
     } else {
@@ -15,8 +14,7 @@ router.get('/reviews/', (req, res) => {
  })
 
  router.get('/reviews/meta', (req, res) => {
-  const { product_id } = req.body;
-  getMetaData(product_id, (err, result) => {
+  getMetaData(req.query.product_id, (err, result) => {
     if (err) {
       console.log(err, 'error in server get')
     } else {

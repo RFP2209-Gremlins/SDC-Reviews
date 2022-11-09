@@ -1,6 +1,6 @@
 const { client } = require('./db.js')
 
-const getReviews = (productID, page, count, sort, callback) => {
+const getReviews = (productID, page, count = 5, sort, callback) => {
   let pages = page || 1;
   if (sort === 'newest') {
     sort = 'date DESC'
@@ -25,15 +25,17 @@ const getReviews = (productID, page, count, sort, callback) => {
         'recommend', recommend,
         'response', response,
         'body', body,
-        'date', to_timestamp(CAST(date as bigint)/1000),
+        'date', to_timestamp(date::bigint/1000) AT TIME ZONE 'UTC',
         'reviewer_name', reviewer_name,
         'helpfulness', helpfulness,
-        'photos', (SELECT json_agg(
-          json_build_object(
-            'id', id,
-            'url', url
-          )
-        )FROM reviews_photos where review_id = result.id)
+        'photos', COALESCE(
+          (SELECT json_agg(
+            json_build_object(
+              'id', id,
+              'url', url
+            )
+          )FROM reviews_photos where review_id = result.id), '[]'
+        )
       )
     ) FROM result)
   )`

@@ -7,6 +7,7 @@ const client = new Pool({
  database: process.env.DB_DATABASE,
  password: process.env.DB_PASSWORD
 })
+
 client.connect((err) => {
  if (err) {
    console.log(err, 'CONNECTION ERR')
@@ -14,8 +15,6 @@ client.connect((err) => {
    console.log('CONNECTED')
  }
 })
-
-
 
 module.exports = {
  client
