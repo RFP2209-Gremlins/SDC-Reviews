@@ -9,7 +9,6 @@ const getReviews = (productID, page, count = 5, sort, callback) => {
   } else {
     sort = 'date DESC, helpfulness DESC'
   }
-  console.log(sort, 'SORT')
   let query = `SELECT json_build_object(
     'product', ${productID},
     'page', ${pages},

@@ -4,7 +4,6 @@ const { getReviews, getMetaData, markHelpful, reportReview, postReview } = requi
 
 router.get('/reviews', (req, res) => {
   getReviews(req.query.product_id, req.query.page, req.query.count, req.query.sort, (err, result1) => {
-    console.log(req.query.product_id)
     if (err) {
       console.log(err, 'error in server get')
     } else {
